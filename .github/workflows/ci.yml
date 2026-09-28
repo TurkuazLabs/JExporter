@@ -1,0 +1,31 @@
+# 📄 Dosya Yolu: .github/workflows/ci.yml
+# 📌 Amac: JExporter Java 17 Maven build dogrulamasini GitHub Actions uzerinde calistirmak
+# 📌 Modul - FileType
+# Version: 2.4.4
+# Aciklama: Her push ve pull request icin Maven package kontrolu yapar
+# Bagimli Oldugu Katman: Tool
+
+name: JExporter CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Maven Package
+        run: mvn -B clean package

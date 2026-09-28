@@ -1,0 +1,29 @@
+# 📄 Dosya Yolu: .gitignore
+# 📌 Amac: JExporter repository'sinde build, IDE, runtime ve buyuk OCR model dosyalarini Git disinda tutmak
+# 📌 Modul - FileType
+# Version: 2.4.4
+# Aciklama: Maven, NetBeans, IntelliJ, log, runtime ve tessdata binary dislama kurallari
+# Bagimli Oldugu Katman: Tool
+
+# Maven / Java
+target/
+*.class
+*.jar
+
+# IDE
+.idea/
+.vscode/
+nbproject/private/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime
+logs/
+*.log
+jexporter.properties
+
+# OCR runtime models
+tessdata/*.traineddata

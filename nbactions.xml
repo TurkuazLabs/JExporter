@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+# Dosya Yolu: nbactions.xml
+# Amac: NetBeans Run Project komutunu dogru Maven exec:java hedefiyle calistirir
+# Modul - FileType
+# Version: 2.4.4
+# Aciklama: exec:exec kaynakli java usage hatasini engeller ve ana sinifi sabitler
+# Bagimli Oldugu Katman: Tool
+-->
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.5.1:java</goal>
+        </goals>
+        <properties>
+            <exec.mainClass>com.mycompany.jexporter.JExporter</exec.mainClass>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:3.5.1:java</goal>
+        </goals>
+        <properties>
+            <exec.mainClass>com.mycompany.jexporter.JExporter</exec.mainClass>
+        </properties>
+    </action>
+</actions>
