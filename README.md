@@ -1,15 +1,29 @@
 <!--
 # 📄 Dosya Yolu: README.md
-# 📌 Amac: JExporter projesinin GitHub giris dokumanini saglamak
+# 📌 Amac: JExporter Community projesinin GitHub giris dokumanini ve edition sinirlarini saglamak
 # 📌 Modul - FileType
 # Version: 2.4.4
-# Aciklama: Proje amaci, build komutlari, OCR verisi ve dokumantasyon baglantilarini aciklar
+# Aciklama: Proje amaci, Community/Pro ayrimi, build komutlari, OCR verisi ve dokumantasyon baglantilarini aciklar
 # Bagimli Oldugu Katman: Controller | Service | Repo | Tool | View | Language
 -->
 
-# JExporter
+# JExporter Community
 
-JExporter, PDF dosyalarindan metin ve OCR verisi okuyup Excel veya CSV cikti ureten Java masaustu uygulamasidir.
+JExporter, PDF dosyalarindan metin ve OCR verisi okuyup Excel veya CSV cikti ureten Java masaustu uygulamasidir. Bu public repository **JExporter Community Edition** kaynak kodunu barindirir.
+
+## Community ve Pro
+
+**Community Edition**
+- Bu public repoda bulunan TurkuazLabs kaynaklari Apache License 2.0 altindadir.
+- Kaynak kod Apache-2.0 kosullarina uygun olarak kullanilabilir, degistirilebilir ve dagitilabilir.
+
+**Pro Edition**
+- Pro kaynak kodu bu public repoda bulunmaz.
+- Pro moduller, ticari servisler, ozel entegrasyonlar ve Pro'ya ozel dagitimlar ayri/private kaynaklar veya paketler uzerinden saglanir.
+- Pro urunlerine erisim ayri ticari lisans veya abonelik kosullarina tabidir.
+- Community lisansi, ayri dagitilan Pro kaynak kodu veya Pro servisleri icin otomatik lisans hakki vermez.
+
+Ayrintili edition sinirlari icin `EDITIONS.md`, Community lisansi icin `LICENSE` dosyasina bakin.
 
 ## Gereksinimler
 
@@ -45,7 +59,7 @@ Linux/macOS:
 bash scripts/download-tessdata.sh
 ```
 
-Dosyalar `tessdata/` klasorune indirilir.
+Dosyalar `tessdata/` klasorune indirilir ve indirme scriptleri beklenen SHA-256 degerlerini dogrular.
 
 ## Dokumantasyon
 
