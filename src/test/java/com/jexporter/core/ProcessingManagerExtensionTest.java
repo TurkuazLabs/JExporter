@@ -62,6 +62,7 @@ final class ProcessingManagerExtensionTest {
                         300,
                         "tur",
                         "custom"),
+                "unused-tessdata",
                 tempDir.resolve("out").toString(),
                 null,
                 new AtomicBoolean(false));
@@ -112,6 +113,7 @@ final class ProcessingManagerExtensionTest {
                         300,
                         "tur",
                         "custom"),
+                "unused-tessdata",
                 tempDir.resolve("cancel-out").toString(),
                 null,
                 stopped);
