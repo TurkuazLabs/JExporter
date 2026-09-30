@@ -25,8 +25,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate Extension Boundary
-        run: python tools/validate-extension-boundary.py
+      - name: Validate Extension Boundaries
+        run: |
+          python tools/validate-extension-boundary.py
+          python tools/validate-extension-api.py
 
       - name: Setup Java 17
         uses: actions/setup-java@v5
@@ -34,6 +36,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
+
+      - name: Verify Extension API
+        run: mvn -B -f extension-api/pom.xml clean verify
 
       - name: Maven Verify
         run: mvn -B clean verify
