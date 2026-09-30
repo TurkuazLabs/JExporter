@@ -1,14 +1,15 @@
 /*
-# Dosya Yolu: src/main/java/com/jexporter/core/OCRProcessor.java
-# Amac: PDF sayfalarini gorsele cevirip Tess4J ile OCR yapar
-# Modul - FileType
-# Version: 2.4.4
-# Aciklama: PDF metni yetersizse klasik OCR yedek veri kaynagi olarak kullanilir
-# Bagimli Oldugu Katman: Tool
+# 📄 Dosya Yolu: src/main/java/com/jexporter/core/OCRProcessor.java
+# 📌 Amac: PDF sayfalarini gorsele cevirip Tess4J ile OCR yapmak
+# 📌 Modul - Java
+# Version: 2.5.0
+# Aciklama: Klasik OCR Tool; yeni ProcessingProgress contractini kullanir, eski Swing overloadunu geriye uyumlu tutar
+# Bagimli Oldugu Katman: Tool | Service | Model
 */
 package com.jexporter.core;
 
 import com.jexporter.model.ProcessRequest;
+import com.jexporter.service.ProcessingProgress;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,15 +29,34 @@ public class OCRProcessor {
     private static final int PROGRESS_OCR_START = 30;
     private static final int PROGRESS_OCR_RANGE = 50;
 
-    public List<String> extractPageTexts(ProcessRequest request,
-                                         String tessdataPath,
-                                         AtomicBoolean shouldStop,
-                                         JProgressBar progressBar) throws IOException {
+    public List<String> extractPageTexts(
+            ProcessRequest request,
+            String tessdataPath,
+            AtomicBoolean shouldStop,
+            JProgressBar progressBar) throws IOException {
+
+        return extractPageTexts(
+                request,
+                tessdataPath,
+                shouldStop,
+                swingProgress(progressBar));
+    }
+
+    public List<String> extractPageTexts(
+            ProcessRequest request,
+            String tessdataPath,
+            AtomicBoolean shouldStop,
+            ProcessingProgress progress) throws IOException {
+
         File inputPdf = new File(request.getPdfPath());
 
         if (!inputPdf.exists()) {
             throw new IllegalArgumentException("PDF bulunamadi: " + inputPdf.getAbsolutePath());
         }
+
+        ProcessingProgress safeProgress = progress == null
+                ? ProcessingProgress.noop()
+                : progress;
 
         List<String> pageTexts = new ArrayList<>();
 
@@ -62,28 +82,44 @@ public class OCRProcessor {
                     String text = tesseract.doOCR(image);
                     pageTexts.add(text == null ? "" : text);
                     System.out.println("[BASARILI] OCR sayfa tamamlandi: " + (page + 1));
-                } catch (TesseractException ex) {
+                } catch (TesseractException exception) {
                     pageTexts.add("");
-                    System.err.println("[BASARISIZ] OCR sayfa hatasi: " + (page + 1) + " - " + ex.getMessage());
+                    System.err.println(
+                            "[BASARISIZ] OCR sayfa hatasi: "
+                                    + (page + 1)
+                                    + " - "
+                                    + exception.getMessage());
                 }
 
-                updateProgress(progressBar, page + 1, totalPages);
+                updateProgress(safeProgress, page + 1, totalPages);
             }
         }
 
         return pageTexts;
     }
 
-    private void updateProgress(JProgressBar progressBar, int current, int total) {
-        if (progressBar == null || total <= 0) {
+    private void updateProgress(
+            ProcessingProgress progress,
+            int current,
+            int total) {
+
+        if (total <= 0) {
             return;
         }
 
-        int progress = PROGRESS_OCR_START + (int) (current * (double) PROGRESS_OCR_RANGE / total);
+        int value = PROGRESS_OCR_START
+                + (int) (current * (double) PROGRESS_OCR_RANGE / total);
+        progress.update(value);
+    }
 
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setValue(progress);
-            progressBar.setString(progress + " %");
+    private ProcessingProgress swingProgress(JProgressBar progressBar) {
+        if (progressBar == null) {
+            return ProcessingProgress.noop();
+        }
+
+        return value -> SwingUtilities.invokeLater(() -> {
+            progressBar.setValue(value);
+            progressBar.setString(value + " %");
         });
     }
 }
