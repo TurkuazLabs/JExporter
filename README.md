@@ -2,7 +2,7 @@
 # 📄 Dosya Yolu: README.md
 # 📌 Amac: JExporter Community projesinin GitHub giris dokumanini ve edition sinirlarini saglamak
 # 📌 Modul - FileType
-# Version: 2.4.4
+# Version: 2.5.0
 # Aciklama: Proje amaci, Community/Pro ayrimi, build komutlari, OCR verisi ve dokumantasyon baglantilarini aciklar
 # Bagimli Oldugu Katman: Controller | Service | Repo | Tool | View | Language
 -->
@@ -61,6 +61,19 @@ bash scripts/download-tessdata.sh
 
 Dosyalar `tessdata/` klasorune indirilir ve indirme scriptleri beklenen SHA-256 degerlerini dogrular.
 
+## Public Extension Contractlari
+
+v2.5.0 ile processing pipeline concrete OCR/export siniflarindan ayrildi.
+
+Public Service contractlari:
+
+- `TextSourceProvider`
+- `OutputExporter`
+- `ProfileProvider`
+- `ProcessingProgress`
+
+Varsayilan Community davranisi `CommunityTextSourceProvider` ve `CommunityOutputExporter` ile korunur. Public contract paketleri Swing, Tess4J ve PDFBox'a bagimli degildir.
+
 ## Dokumantasyon
 
 - `docs/README.md`
@@ -70,4 +83,4 @@ Dosyalar `tessdata/` klasorune indirilir ve indirme scriptleri beklenen SHA-256 
 
 ## Surum
 
-Guncel kaynak surumu: `2.4.4`
+Guncel kaynak surumu: `2.5.0`
