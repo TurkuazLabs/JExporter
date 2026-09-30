@@ -2,7 +2,7 @@
 # 📄 Dosya Yolu: docs/ARCHITECTURE.md
 # 📌 Amac: JExporter mimari katmanlarini, public extension contractlarini ve modul sorumluluklarini aciklamak
 # 📌 Modul - Markdown
-# Version: 2.5.0
+# Version: 2.5.1
 # Aciklama: Controller, Service, Tool, Model ve Community adapter sinirlarini dokumante eder
 # Bagimli Oldugu Katman: Controller | Service | Tool | Model
 -->
@@ -30,6 +30,7 @@ src/main/java/com/jexporter/core/ProcessingManager.java
 src/main/java/com/jexporter/core/TextGrouper.java
 
 src/main/java/com/jexporter/service/TextSourceProvider.java
+src/main/java/com/jexporter/service/OcrProvider.java
 src/main/java/com/jexporter/service/OutputExporter.java
 src/main/java/com/jexporter/service/ProfileProvider.java
 src/main/java/com/jexporter/service/ProcessingProgress.java
@@ -50,7 +51,8 @@ Varsayilan Community davranisi public contractlar arkasinda su adapterlarla uygu
 CommunityTextSourceProvider
   -> PdfTextExtractor
   -> LayoutOcrProcessor
-  -> OCRProcessor
+  -> OcrProvider
+      -> OCRProcessor
 
 CommunityOutputExporter
   -> ExcelExporter
@@ -108,7 +110,7 @@ ProcessingManager
   -> new ExcelExporter()
 ```
 
-v2.5.0 ile:
+v2.5.0/v2.5.1 ile:
 
 ```text
 ProcessingManager
