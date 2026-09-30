@@ -2,7 +2,7 @@
 # 📄 Dosya Yolu: README.md
 # 📌 Amac: JExporter Community projesinin GitHub giris dokumanini ve edition sinirlarini saglamak
 # 📌 Modul - FileType
-# Version: 2.5.0
+# Version: 2.5.1
 # Aciklama: Proje amaci, Community/Pro ayrimi, build komutlari, OCR verisi ve dokumantasyon baglantilarini aciklar
 # Bagimli Oldugu Katman: Controller | Service | Repo | Tool | View | Language
 -->
@@ -63,11 +63,12 @@ Dosyalar `tessdata/` klasorune indirilir ve indirme scriptleri beklenen SHA-256 
 
 ## Public Extension Contractlari
 
-v2.5.0 ile processing pipeline concrete OCR/export siniflarindan ayrildi.
+v2.5.0 ile processing pipeline concrete OCR/export siniflarindan ayrildi; v2.5.1 ile klasik OCR adimi da public `OcrProvider` contractina alindi.
 
 Public Service contractlari:
 
 - `TextSourceProvider`
+- `OcrProvider`
 - `OutputExporter`
 - `ProfileProvider`
 - `ProcessingProgress`
@@ -83,4 +84,4 @@ Varsayilan Community davranisi `CommunityTextSourceProvider` ve `CommunityOutput
 
 ## Surum
 
-Guncel kaynak surumu: `2.5.0`
+Guncel kaynak surumu: `2.5.1`
