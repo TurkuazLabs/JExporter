@@ -1,7 +1,7 @@
 # 📄 Dosya Yolu: tools/validate-extension-boundary.py
 # 📌 Amac: JExporter public extension contractlari ile Community adapter dependency sinirini statik dogrulamak
 # 📌 Modul - Python
-# Version: 2.5.0
+# Version: 2.5.1
 # Aciklama: Public contractlarda Swing/Tess4J/PDFBox sizintisini ve ProcessingManager concrete tool composition regressionsini engeller
 # Bagimli Oldugu Katman: Tool | Service | Config
 
@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_CONTRACTS = [
     "src/main/java/com/jexporter/service/ProcessingProgress.java",
     "src/main/java/com/jexporter/service/TextSourceProvider.java",
+    "src/main/java/com/jexporter/service/OcrProvider.java",
     "src/main/java/com/jexporter/service/OutputExporter.java",
     "src/main/java/com/jexporter/service/ProfileProvider.java",
 ]
@@ -76,6 +77,22 @@ profile_manager = (
 
 if "implements ProfileProvider" not in profile_manager:
     fail("ProfileManager must implement public ProfileProvider")
+
+ocr_processor = (
+    ROOT
+    / "src/main/java/com/jexporter/core/OCRProcessor.java"
+).read_text(encoding="utf-8")
+
+if "implements OcrProvider" not in ocr_processor:
+    fail("OCRProcessor must implement public OcrProvider")
+
+community_text_source = (
+    ROOT
+    / "src/main/java/com/jexporter/service/CommunityTextSourceProvider.java"
+).read_text(encoding="utf-8")
+
+if "OcrProvider ocrProvider" not in community_text_source:
+    fail("CommunityTextSourceProvider must depend on OcrProvider")
 
 print(
     "EXTENSION_BOUNDARY_OK: "
