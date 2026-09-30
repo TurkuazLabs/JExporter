@@ -2,17 +2,18 @@
 # Dosya Yolu: src/main/java/com/jexporter/profile/ProfileManager.java
 # Amac: JSON kullanmadan kod icinden opsiyonel sutun tanimi saglar
 # Modul - FileType
-# Version: 2.4.4
-# Aciklama: Varsayilan cikti orijinal PDF metin duzenini korur; fatura sutunlari ayri mod icin saklanir
+# Version: 2.5.0
+# Aciklama: Community profile implementation; public ProfileProvider contracti uzerinden field listesini sunar
 # Bagimli Oldugu Katman: Service
 */
 package com.jexporter.profile;
 
+import com.jexporter.service.ProfileProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProfileManager {
+public class ProfileManager implements ProfileProvider {
 
     private final List<FieldDefinition> fields;
 
@@ -38,6 +39,7 @@ public class ProfileManager {
         fields.add(new FieldDefinition("tutar", 154, 190));
     }
 
+    @Override
     public List<FieldDefinition> getFields() {
         return Collections.unmodifiableList(fields);
     }
