@@ -1,7 +1,7 @@
 # 📄 Dosya Yolu: tools/validate-extension-api.py
 # 📌 Amac: JExporter Extension API Maven whitelist ve dependency-free public contract sinirini dogrulamak
 # 📌 Modul - Python
-# Version: 2.5.0
+# Version: 2.5.1
 # Aciklama: API artifact'inde Community adapter, UI, PDFBox, Tess4J veya private dependency sizmasini engeller
 # Bagimli Oldugu Katman: Tool | Service | Model | Config
 
@@ -14,6 +14,7 @@ POM = ROOT / "extension-api" / "pom.xml"
 REQUIRED_INCLUDES = [
     "ProcessingProgress.java",
     "TextSourceProvider.java",
+    "OcrProvider.java",
     "OutputExporter.java",
     "ProfileProvider.java",
     "ProcessRequest.java",
