@@ -1,15 +1,16 @@
 /*
-# Dosya Yolu: src/main/java/com/jexporter/core/LayoutOcrProcessor.java
-# Amac: Tess4J HOCR cikti ile kelime koordinatlarini okuyup sayfa bazli metin uretir
-# Modul - FileType
-# Version: 2.4.4
-# Aciklama: Layout OCR sonucunu sayfa ayrimini bozmadan TextGrouper akisina hazirlar
-# Bagimli Oldugu Katman: Service
+# 📄 Dosya Yolu: src/main/java/com/jexporter/core/LayoutOcrProcessor.java
+# 📌 Amac: Tess4J HOCR cikti ile kelime koordinatlarini okuyup sayfa bazli metin uretmek
+# 📌 Modul - Java
+# Version: 2.5.0
+# Aciklama: Layout OCR Tool; yeni ProcessingProgress contractini kullanir, eski Swing overloadunu geriye uyumlu tutar
+# Bagimli Oldugu Katman: Tool | Service | Model
 */
 package com.jexporter.core;
 
 import com.jexporter.model.OcrWord;
 import com.jexporter.model.ProcessRequest;
+import com.jexporter.service.ProcessingProgress;
 import net.sourceforge.tess4j.Tesseract;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -40,11 +41,29 @@ public class LayoutOcrProcessor {
         this.tableBuilder = new LayoutTableBuilder();
     }
 
-    public List<String> extractTextLines(ProcessRequest request,
-                                         String tessdataPath,
-                                         AtomicBoolean shouldStop,
-                                         JProgressBar progressBar) throws Exception {
+    public List<String> extractTextLines(
+            ProcessRequest request,
+            String tessdataPath,
+            AtomicBoolean shouldStop,
+            JProgressBar progressBar) throws Exception {
+
+        return extractTextLines(
+                request,
+                tessdataPath,
+                shouldStop,
+                swingProgress(progressBar));
+    }
+
+    public List<String> extractTextLines(
+            ProcessRequest request,
+            String tessdataPath,
+            AtomicBoolean shouldStop,
+            ProcessingProgress progress) throws Exception {
+
         File inputPdf = new File(request.getPdfPath());
+        ProcessingProgress safeProgress = progress == null
+                ? ProcessingProgress.noop()
+                : progress;
         List<String> pageTexts = new ArrayList<>();
 
         Tesseract tesseract = new Tesseract();
@@ -72,7 +91,7 @@ public class LayoutOcrProcessor {
                 List<String> lines = tableBuilder.toTextLines(rows);
                 pageTexts.add(String.join(System.lineSeparator(), lines));
 
-                updateProgress(progressBar, page + 1, totalPages);
+                updateProgress(safeProgress, page + 1, totalPages);
                 System.out.println("[BASARILI] Layout OCR sayfa tamamlandi: " + (page + 1));
             }
         }
@@ -97,12 +116,15 @@ public class LayoutOcrProcessor {
         for (int i = 0; i < spans.getLength(); i++) {
             Element span = (Element) spans.item(i);
 
-            if (!span.getAttribute("class").contains("ocrx_word") || !span.hasAttribute("title")) {
+            if (!span.getAttribute("class").contains("ocrx_word")
+                    || !span.hasAttribute("title")) {
                 continue;
             }
 
             String title = span.getAttribute("title");
-            String text = span.getTextContent() == null ? "" : span.getTextContent().trim();
+            String text = span.getTextContent() == null
+                    ? ""
+                    : span.getTextContent().trim();
 
             if (text.isEmpty()) {
                 continue;
@@ -113,7 +135,13 @@ public class LayoutOcrProcessor {
                 continue;
             }
 
-            words.add(new OcrWord(text, bbox[0], bbox[1], bbox[2], bbox[3], page));
+            words.add(new OcrWord(
+                    text,
+                    bbox[0],
+                    bbox[1],
+                    bbox[2],
+                    bbox[3],
+                    page));
         }
 
         return words;
@@ -141,7 +169,7 @@ public class LayoutOcrProcessor {
                         Integer.parseInt(coords[2]),
                         Integer.parseInt(coords[3])
                 };
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException exception) {
                 return null;
             }
         }
@@ -149,16 +177,28 @@ public class LayoutOcrProcessor {
         return null;
     }
 
-    private void updateProgress(JProgressBar progressBar, int current, int total) {
-        if (progressBar == null || total <= 0) {
+    private void updateProgress(
+            ProcessingProgress progress,
+            int current,
+            int total) {
+
+        if (total <= 0) {
             return;
         }
 
-        int progress = PROGRESS_OCR_START + (int) (current * (double) PROGRESS_OCR_RANGE / total);
+        int value = PROGRESS_OCR_START
+                + (int) (current * (double) PROGRESS_OCR_RANGE / total);
+        progress.update(value);
+    }
 
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setValue(progress);
-            progressBar.setString(progress + " %");
+    private ProcessingProgress swingProgress(JProgressBar progressBar) {
+        if (progressBar == null) {
+            return ProcessingProgress.noop();
+        }
+
+        return value -> SwingUtilities.invokeLater(() -> {
+            progressBar.setValue(value);
+            progressBar.setString(value + " %");
         });
     }
 }
