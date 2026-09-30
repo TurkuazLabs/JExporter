@@ -2,8 +2,8 @@
 # 📄 Dosya Yolu: src/main/java/com/jexporter/service/CommunityTextSourceProvider.java
 # 📌 Amac: JExporter Community PDF text -> layout OCR -> klasik OCR fallback zincirini TextSourceProvider olarak uygulamak
 # 📌 Modul - Java
-# Version: 2.5.0
-# Aciklama: Mevcut 2.4.4 metin kaynagi secim davranisini public provider contracti arkasinda korur
+# Version: 2.5.1
+# Aciklama: Mevcut fallback davranisini korur; klasik OCR adimini public OcrProvider contracti uzerinden cagirir
 # Bagimli Oldugu Katman: Service | Tool | Model
 */
 package com.jexporter.service;
@@ -13,6 +13,7 @@ import com.jexporter.core.OCRProcessor;
 import com.jexporter.core.PdfTextExtractor;
 import com.jexporter.logging.AppLogger;
 import com.jexporter.model.ProcessRequest;
+import com.jexporter.service.OcrProvider;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +26,7 @@ public final class CommunityTextSourceProvider implements TextSourceProvider {
 
     private final PdfTextExtractor pdfTextExtractor;
     private final LayoutOcrProcessor layoutOcrProcessor;
-    private final OCRProcessor ocrProcessor;
+    private final OcrProvider ocrProvider;
 
     public CommunityTextSourceProvider() {
         this(new PdfTextExtractor(), new LayoutOcrProcessor(), new OCRProcessor());
@@ -34,10 +35,10 @@ public final class CommunityTextSourceProvider implements TextSourceProvider {
     public CommunityTextSourceProvider(
             PdfTextExtractor pdfTextExtractor,
             LayoutOcrProcessor layoutOcrProcessor,
-            OCRProcessor ocrProcessor) {
+            OcrProvider ocrProvider) {
         this.pdfTextExtractor = Objects.requireNonNull(pdfTextExtractor, "pdfTextExtractor");
         this.layoutOcrProcessor = Objects.requireNonNull(layoutOcrProcessor, "layoutOcrProcessor");
-        this.ocrProcessor = Objects.requireNonNull(ocrProcessor, "ocrProcessor");
+        this.ocrProvider = Objects.requireNonNull(ocrProvider, "ocrProvider");
     }
 
     @Override
@@ -80,7 +81,7 @@ public final class CommunityTextSourceProvider implements TextSourceProvider {
             AppLogger.warning("Klasik OCR deneniyor.");
         }
 
-        List<String> ocrTexts = ocrProcessor.extractPageTexts(
+        List<String> ocrTexts = ocrProvider.extractPageTexts(
                 request,
                 tessdataPath,
                 shouldStop,
