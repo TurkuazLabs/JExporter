@@ -1,0 +1,47 @@
+<!--
+# 📄 Dosya Yolu: extension-api/pom.xml
+# 📌 Amac: JExporter public extension contractlarini ayri, hafif Maven artifact olarak derlemek
+# 📌 Modul - XML
+# Version: 2.5.0
+# Aciklama: Root source tree'den yalniz Service contract ve gerekli Model siniflarini whitelist ile compile eder
+# Bagimli Oldugu Katman: Service | Model | Tool
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.turkuazlabs.jexporter</groupId>
+    <artifactId>jexporter-extension-api</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+    <name>JExporter Extension API</name>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compiler.plugin.version>3.13.0</compiler.plugin.version>
+    </properties>
+
+    <build>
+        <sourceDirectory>${project.basedir}/../src/main/java</sourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <includes>
+                        <include>com/jexporter/service/ProcessingProgress.java</include>
+                        <include>com/jexporter/service/TextSourceProvider.java</include>
+                        <include>com/jexporter/service/OutputExporter.java</include>
+                        <include>com/jexporter/service/ProfileProvider.java</include>
+                        <include>com/jexporter/model/ProcessRequest.java</include>
+                        <include>com/jexporter/profile/FieldDefinition.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
