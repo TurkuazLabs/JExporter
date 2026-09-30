@@ -2,7 +2,7 @@
 # Dosya Yolu: src/main/java/com/jexporter/config/AppConstants.java
 # Amac: Uygulama genelinde kullanilan sabit degerleri merkezi olarak tutar
 # Modul - FileType
-# Version: 2.4.4
+# Version: 2.5.0
 # Aciklama: Magic string kullanimini azaltmak icin ortak sabitleri ve kaynak yollarini saglar
 # Bagimli Oldugu Katman: Tool
 */
@@ -13,7 +13,7 @@ import java.awt.Color;
 public final class AppConstants {
 
     public static final String APP_NAME = "JExporter";
-    public static final String APP_VERSION = "2.4.4";
+    public static final String APP_VERSION = "2.5.0";
     public static final String APP_TITLE = APP_NAME + " - PDF OCR Export";
 
     public static final String RESOURCE_LOGO = "/logo.png";
