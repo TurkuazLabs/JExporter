@@ -2,12 +2,23 @@
 # Dosya Yolu: docs/CHANGELOG.md
 # Amac: JExporter surum gecmisini ve degisiklikleri takip eder
 # Modul - FileType
-# Version: 2.4.4
+# Version: 2.5.0
 # Aciklama: Patch, minor ve major surum notlarini tutar
 # Bagimli Oldugu Katman: Tool
 -->
 
 # Changelog
+
+## 2.5.0
+
+- `TextSourceProvider`, `OutputExporter`, `ProfileProvider` ve `ProcessingProgress` public extension contractlari eklendi.
+- `ProcessingManager` concrete OCR/export siniflarini dogrudan olusturmak yerine dependency injection kullanacak sekilde refactor edildi.
+- Varsayilan PDF text -> Layout OCR -> klasik OCR davranisi `CommunityTextSourceProvider` arkasina alindi.
+- XLSX/CSV davranisi `CommunityOutputExporter` arkasina alindi.
+- OCR progress akisi Swing bagimliligindan ayrildi; eski JProgressBar overloadlari geriye uyumlu tutuldu.
+- Extension boundary validator ve JUnit regression testleri CI'a eklendi.
+- Community/Pro bagimlilik yonu public Service contractlari uzerinden netlestirildi.
+
 
 ## 2.4.4
 
