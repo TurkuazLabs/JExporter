@@ -1,8 +1,8 @@
 # 📄 Dosya Yolu: .github/workflows/ci.yml
 # 📌 Amac: JExporter Java 17 Maven build dogrulamasini GitHub Actions uzerinde calistirmak
 # 📌 Modul - FileType
-# Version: 2.4.4
-# Aciklama: Her push ve pull request icin Maven package kontrolu yapar
+# Version: 2.5.0
+# Aciklama: Extension boundary validator ve Java 17 Maven test/package kontrollerini calistirir
 # Bagimli Oldugu Katman: Tool
 
 name: JExporter CI
@@ -20,12 +20,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Extension Boundary
+        run: python tools/validate-extension-boundary.py
+
       - name: Setup Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
 
-      - name: Maven Package
-        run: mvn -B clean package
+      - name: Maven Verify
+        run: mvn -B clean verify
