@@ -1,7 +1,7 @@
 # 📄 Dosya Yolu: extension-api/README.md
 # 📌 Amac: JExporter public extension API Maven artifact kapsam ve tuketim sinirini aciklamak
 # 📌 Modul - Markdown
-# Version: 2.5.0
+# Version: 2.5.1
 # Aciklama: Community veya private extension implementationlarinin source kopyalamadan tuketecegi compile-time contract
 # Bagimli Oldugu Katman: Service | Model
 
@@ -10,7 +10,7 @@
 Artifact:
 
 ```text
-com.turkuazlabs.jexporter:jexporter-extension-api:2.5.0-SNAPSHOT
+com.turkuazlabs.jexporter:jexporter-extension-api:2.5.1-SNAPSHOT
 ```
 
 Bu modul yeni source kopyasi tutmaz. Root `src/main/java` agacindan whitelist ile yalniz public extension contractlarini compile eder.
@@ -19,6 +19,7 @@ Bu modul yeni source kopyasi tutmaz. Root `src/main/java` agacindan whitelist il
 
 - `ProcessingProgress`
 - `TextSourceProvider`
+- `OcrProvider`
 - `OutputExporter`
 - `ProfileProvider`
 - `ProcessRequest`
