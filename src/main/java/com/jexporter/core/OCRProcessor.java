@@ -2,13 +2,14 @@
 # 📄 Dosya Yolu: src/main/java/com/jexporter/core/OCRProcessor.java
 # 📌 Amac: PDF sayfalarini gorsele cevirip Tess4J ile OCR yapmak
 # 📌 Modul - Java
-# Version: 2.5.0
-# Aciklama: Klasik OCR Tool; yeni ProcessingProgress contractini kullanir, eski Swing overloadunu geriye uyumlu tutar
+# Version: 2.5.1
+# Aciklama: Klasik Community OCR Tool; public OcrProvider contractini uygular ve eski Swing overloadunu geriye uyumlu tutar
 # Bagimli Oldugu Katman: Tool | Service | Model
 */
 package com.jexporter.core;
 
 import com.jexporter.model.ProcessRequest;
+import com.jexporter.service.OcrProvider;
 import com.jexporter.service.ProcessingProgress;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class OCRProcessor {
+public class OCRProcessor implements OcrProvider {
 
     private static final int PROGRESS_OCR_START = 30;
     private static final int PROGRESS_OCR_RANGE = 50;
@@ -42,6 +43,7 @@ public class OCRProcessor {
                 swingProgress(progressBar));
     }
 
+    @Override
     public List<String> extractPageTexts(
             ProcessRequest request,
             String tessdataPath,
