@@ -69,11 +69,20 @@ jobs:
           path: turkuaz-installer-source
           persist-credentials: false
 
-      - name: Build pinned Rust setup engine
+      # GUI-subsystem EXE is only an embedding stub. A console-subsystem
+      # binary must run build-package/build-native-setup so pwsh can await exit.
+      - name: Build TurkuazInstaller GUI stub and console CLI
         shell: pwsh
         run: |
-          cargo build --locked --manifest-path turkuaz-installer-source/rust/Cargo.toml -p turkuaz-installer-cli --release --bin turkuaz-installer --features setup-authoring-gui
-          if ($LASTEXITCODE -ne 0) { throw 'TurkuazInstaller engine build failed.' }
+          $manifest = 'turkuaz-installer-source/rust/Cargo.toml'
+          $bin = 'turkuaz-installer-source/rust/target/release/turkuaz-installer.exe'
+          $stub = 'turkuaz-installer-source/rust/target/release/turkuaz-installer-studio.exe'
+          cargo build --locked --manifest-path $manifest -p turkuaz-installer-cli --release --bin turkuaz-installer --features setup-authoring-gui
+          if ($LASTEXITCODE -ne 0) { throw 'TurkuazInstaller GUI build failed.' }
+          Copy-Item -LiteralPath $bin -Destination $stub -Force
+          cargo build --locked --manifest-path $manifest -p turkuaz-installer-cli --release --bin turkuaz-installer --no-default-features
+          if ($LASTEXITCODE -ne 0) { throw 'TurkuazInstaller console CLI build failed.' }
+          if (-not (Test-Path -LiteralPath $stub -PathType Leaf)) { throw 'GUI stub missing.' }
 
       - name: Generate package and Setup EXE
         shell: pwsh
@@ -87,7 +96,7 @@ jobs:
           $setup = Join-Path $output ('JExporter-Setup-' + $version + '.exe')
           & $cli build-package --package-id com.turkuazlabs.jexporter --version $version --source 'dist/jexporter-payload' --output $package
           if ($LASTEXITCODE -ne 0) { throw 'JExporter package generation failed.' }
-          & $cli build-native-setup --stub $cli --package $package --output $setup
+          & $cli build-native-setup --stub 'turkuaz-installer-source/rust/target/release/turkuaz-installer-studio.exe' --package $package --output $setup
           if ($LASTEXITCODE -ne 0) { throw 'JExporter Setup EXE generation failed.' }
           $hashes = foreach ($file in @($package, $setup)) {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing output: $file" }
