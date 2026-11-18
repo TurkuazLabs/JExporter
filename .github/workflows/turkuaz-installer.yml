@@ -1,0 +1,107 @@
+# Dosya Yolu: REPO_ROOT/.github/workflows/turkuaz-installer.yml
+# Amac: JExporter Java 17 dosyalarindan Rust TurkuazInstaller Windows kurucu uretir
+# Modul - GitHub Actions YAML
+# Version: 1.0.0
+# Aciklama: Sabitlenmis TurkuazInstaller v0.2.24 kullanir; NSIS kullanmaz
+# Bagimli Oldugu Katman: CI | Distribution
+
+name: JExporter TurkuazInstaller
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/turkuaz-installer.yml"
+      - "pom.xml"
+      - "src/**"
+      - "tessdata/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-setup:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout JExporter
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build Java app and runtime dependencies
+        shell: pwsh
+        run: |
+          mvn -B clean verify dependency:copy-dependencies "-DincludeScope=runtime" "-DoutputDirectory=target/dependency"
+          if ($LASTEXITCODE -ne 0) { throw 'JExporter Maven build failed.' }
+
+      - name: Stage Java payload
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          [xml]$pom = Get-Content -LiteralPath 'pom.xml' -Raw
+          $version = [string]$pom.project.version
+          if ($version -notmatch '^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$') { throw 'JExporter package version is not SemVer.' }
+          $jar = Join-Path $PWD ('target/JExporter-' + $version + '.jar')
+          if (-not (Test-Path -LiteralPath $jar -PathType Leaf)) { throw 'JExporter JAR missing.' }
+          $payload = 'dist/jexporter-payload'
+          New-Item -ItemType Directory -Force -Path (Join-Path $payload 'lib') | Out-Null
+          Copy-Item -LiteralPath $jar -Destination (Join-Path $payload 'JExporter.jar')
+          Get-ChildItem -LiteralPath 'target/dependency' -Filter '*.jar' -File | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $payload 'lib')
+          }
+          $launcher = '@echo off' + "`r`n" + 'cd /d "%~dp0"' + "`r`n" + 'java -cp "JExporter.jar;lib/*" com.mycompany.jexporter.JExporter %*' + "`r`n"
+          [IO.File]::WriteAllText((Join-Path (Resolve-Path $payload) 'JExporter.bat'), $launcher, [Text.Encoding]::ASCII)
+          "JEXPORTER_VERSION=$version" >> $env:GITHUB_ENV
+
+      # @dev-id JEXP-TI-SETUP-001
+      - name: Checkout reviewed TurkuazInstaller
+        uses: actions/checkout@v4
+        with:
+          repository: TurkuazLabs/TurkuazInstaller
+          ref: 10101dee8b6efe4775f5cf72aa05f3a3da934bfa
+          path: turkuaz-installer-source
+          persist-credentials: false
+
+      - name: Build pinned Rust setup engine
+        shell: pwsh
+        run: |
+          cargo build --locked --manifest-path turkuaz-installer-source/rust/Cargo.toml -p turkuaz-installer-cli --release --bin turkuaz-installer --features setup-authoring-gui
+          if ($LASTEXITCODE -ne 0) { throw 'TurkuazInstaller engine build failed.' }
+
+      - name: Generate package and Setup EXE
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = $env:JEXPORTER_VERSION
+          $cli = 'turkuaz-installer-source/rust/target/release/turkuaz-installer.exe'
+          $output = 'dist/installer'
+          New-Item -ItemType Directory -Path $output -Force | Out-Null
+          $package = Join-Path $output ('JExporter-' + $version + '.tzpkg')
+          $setup = Join-Path $output ('JExporter-Setup-' + $version + '.exe')
+          & $cli build-package --package-id com.turkuazlabs.jexporter --version $version --source 'dist/jexporter-payload' --output $package
+          if ($LASTEXITCODE -ne 0) { throw 'JExporter package generation failed.' }
+          & $cli build-native-setup --stub $cli --package $package --output $setup
+          if ($LASTEXITCODE -ne 0) { throw 'JExporter Setup EXE generation failed.' }
+          $hashes = foreach ($file in @($package, $setup)) {
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing output: $file" }
+            $hash = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $([IO.Path]::GetFileName($file))"
+          }
+          $hashes | Set-Content -LiteralPath (Join-Path $output 'SHA256SUMS.txt') -Encoding ascii
+
+      - name: Upload TurkuazInstaller package
+        uses: actions/upload-artifact@v4
+        with:
+          name: JExporter-TurkuazInstaller
+          path: |
+            dist/installer/JExporter-*.tzpkg
+            dist/installer/JExporter-Setup-*.exe
+            dist/installer/SHA256SUMS.txt
+          if-no-files-found: error
